@@ -4,63 +4,200 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BD GAME BAJAR</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#10131e;color:white;font-family:Arial,sans-serif}
-header{background:#191e30;padding:22px;text-align:center}
-header h1{color:#ffb800;margin:0}
-header p{color:#ccc}
-.hero{text-align:center;padding:35px 15px;background:linear-gradient(135deg,#242b48,#10131e)}
-.hero h2{color:#ffbd24}
-.container{max-width:650px;margin:auto;padding:15px}
-.pack{background:#20263a;border:1px solid #39415c;border-radius:12px;padding:17px;margin:12px 0;display:flex;justify-content:space-between;align-items:center}
-.price{color:#ffc02e;font-weight:bold}
-button{background:#ffb800;border:0;padding:12px 18px;border-radius:8px;font-weight:bold}
-input,select{width:100%;padding:13px;margin:8px 0;background:#20263a;color:white;border:1px solid #59617b;border-radius:8px}
-h3{color:#ffbd24}
-footer{text-align:center;color:#aaa;padding:25px}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1020;
+  color: white;
+}
+header {
+  background: #151d35;
+  padding: 22px 10px;
+  text-align: center;
+}
+header h1 {
+  margin: 0;
+  color: #ffbd24;
+  font-size: 28px;
+}
+header p {
+  color: #ddd;
+  margin-bottom: 0;
+}
+.hero {
+  padding: 40px 15px;
+  text-align: center;
+  background: linear-gradient(135deg, #29365e, #11182b);
+}
+.hero h2 {
+  color: #ffbd24;
+}
+.container {
+  max-width: 650px;
+  margin: auto;
+  padding: 18px;
+}
+h3 {
+  color: #ffbd24;
+}
+.pack {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1c2743;
+  border: 1px solid #38496d;
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: 12px;
+}
+.price {
+  color: #ffbd24;
+  font-weight: bold;
+}
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin: 9px 0;
+  border: 1px solid #435276;
+  border-radius: 8px;
+  background: #1c2743;
+  color: white;
+  font-size: 15px;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #ffbd24;
+  color: #111;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #aaa;
+}
+.note {
+  color: #bbb;
+  font-size: 13px;
+  line-height: 1.6;
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>BD GAME BAJAR</h1>
-<p>Free Fire Diamond Top Up</p>
+  <h1>BD GAME BAJAR</h1>
+  <p>Free Fire Diamond Top Up</p>
 </header>
+
 <section class="hero">
-<h2>Welcome to BD GAME BAJAR</h2>
-<p>Choose your Diamond Package</p>
+  <h2>Welcome to BD GAME BAJAR</h2>
+  <p>Choose Your Diamond Package</p>
 </section>
-<div class="container">
-<h3>💎 Diamond Packages</h3>
-<div id="packages">Loading packages...</div>
-<h3>Order Form</h3>
-<form onsubmit="event.preventDefault();alert('এটি শুধু ডেমো। অর্ডার এখনো জমা হচ্ছে না।');">
-<input placeholder="Free Fire Player UID" required>
-<select id="package" required>
-<option value="">Select Diamond Package</option>
-</select>
-<button type="submit">Place Demo Order</button>
-</form>
-</div>
-<footer>© 2026 BD GAME BAJAR</footer>
+
+<main class="container">
+
+  <h3>💎 Diamond Packages</h3>
+
+  <div id="packages">
+    Loading...
+  </div>
+
+  <h3>📝 Demo Order Form</h3>
+
+  <form id="orderForm">
+
+    <input
+      type="text"
+      id="playerUID"
+      placeholder="Enter Free Fire Player UID"
+      required
+    >
+
+    <select id="packageSelect" required>
+      <option value="">Select Diamond Package</option>
+    </select>
+
+    <button type="submit">Place Demo Order</button>
+
+  </form>
+
+  <p class="note">
+    এটি একটি ডেমো ওয়েবসাইট। এখনো কোনো বাস্তব অর্ডার বা পেমেন্ট গ্রহণ করা হয় না।
+  </p>
+
+</main>
+
+<footer>
+  © 2026 BD GAME BAJAR
+</footer>
+
 <script>
-const packages=[
-["25 Diamonds",25],
-["50 Diamonds",38],
-["115 Diamonds",80],
-["240 Diamonds",160],
-["610 Diamonds",400],
-["850 Diamonds",560],
-["1240 Diamonds",799],
-["2530 Diamonds",1570]
+const packages = [
+  { name: "25 Diamonds", price: 25 },
+  { name: "50 Diamonds", price: 38 },
+  { name: "115 Diamonds", price: 80 },
+  { name: "240 Diamonds", price: 160 },
+  { name: "610 Diamonds", price: 400 },
+  { name: "850 Diamonds", price: 560 },
+  { name: "1240 Diamonds", price: 799 },
+  { name: "2530 Diamonds", price: 1570 }
 ];
-const list=document.getElementById("packages");
-const select=document.getElementById("package");
-list.innerHTML="";
-packages.forEach(p=>{
-list.innerHTML+=`<div class="pack"><span>${p[0]}</span><span class="price">৳${p[1]}</span></div>`;
-select.innerHTML+=`<option value="${p[0]}">${p[0]} - ৳${p[1]}</option>`;
+
+const packageBox = document.getElementById("packages");
+const packageSelect = document.getElementById("packageSelect");
+
+packages.forEach(function(item) {
+
+  const card = document.createElement("div");
+  card.className = "pack";
+
+  const name = document.createElement("span");
+  name.textContent = item.name;
+
+  const price = document.createElement("span");
+  price.className = "price";
+  price.textContent = "৳" + item.price;
+
+  card.appendChild(name);
+  card.appendChild(price);
+  packageBox.appendChild(card);
+
+  const option = document.createElement("option");
+  option.value = item.name;
+  option.textContent = item.name + " - ৳" + item.price;
+
+  packageSelect.appendChild(option);
+
 });
+
+document.getElementById("orderForm").addEventListener("submit", function(event) {
+
+  event.preventDefault();
+
+  const uid = document.getElementById("playerUID").value;
+  const selectedPackage = packageSelect.value;
+
+  alert(
+    "Demo Order Created!\n" +
+    "Player UID: " + uid +
+    "\nPackage: " + selectedPackage +
+    "\n\nএটি শুধু ডেমো। অর্ডার সার্ভারে জমা হয়নি।"
+  );
+
+});
+
 </script>
+
 </body>
 </html>
