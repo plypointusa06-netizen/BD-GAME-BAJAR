@@ -191,7 +191,8 @@ async function loadPackages() {
 }
 
 loadPackages();
-];
+console.log("Supabase:", window.supabase);
+console.log("Client:", supabaseClient);];
 
 const packageBox = document.getElementById("packages");
 const packageSelect = document.getElementById("packageSelect");
