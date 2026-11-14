@@ -3,27 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BD GAME BAJAR - Admin</title>
+<title>BD GAME BAJAR Admin</title>
 <style>
 body {
   margin: 0;
+  padding: 15px;
   background: #101522;
   color: white;
   font-family: Arial, sans-serif;
-  padding: 20px;
 }
-.box {
-  max-width: 400px;
-  margin: 60px auto;
+header {
+  background: #17233b;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+h1, h2 { color: #00e6ad; }
+.panel {
   background: #1b263b;
-  padding: 22px;
-  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 10px;
 }
-h2 { color: #00e6ad; text-align: center; }
 input, button {
   width: 100%;
-  padding: 14px;
-  margin-top: 12px;
+  padding: 12px;
+  margin: 7px 0;
   box-sizing: border-box;
   border: 0;
   border-radius: 7px;
@@ -32,26 +37,55 @@ button {
   background: #00c995;
   font-weight: bold;
 }
+.item {
+  background: #263650;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+.small {
+  width: auto;
+  padding: 9px 12px;
+  margin-right: 5px;
+}
+#dashboard { display: none; }
 #message { color: #ffd166; }
 </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>BD GAME BAJAR</h2>
-  <h3>Admin Login</h3>
+<header>
+  <h1>BD GAME BAJAR</h1>
+  <p>Admin Dashboard</p>
+</header>
 
-  <form id="loginForm">
-    <input id="email" type="email"
-      placeholder="Admin Email" required>
-
-    <input id="password" type="password"
-      placeholder="Password" required>
-
-    <button type="submit">Login</button>
-  </form>
-
+<div class="panel" id="loginBox">
+  <h2>Admin Login</h2>
+  <input id="email" type="email" placeholder="Admin Email">
+  <input id="password" type="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
   <p id="message"></p>
+</div>
+
+<div id="dashboard">
+
+  <div class="panel">
+    <h2>Package Management</h2>
+    <input id="packageName" placeholder="Package Name">
+    <input id="diamonds" type="number" placeholder="Diamond Amount">
+    <input id="price" type="number" placeholder="Price BDT">
+    <button id="addBtn">Add Package</button>
+    <p id="packageMessage"></p>
+  </div>
+
+  <div class="panel">
+    <h2>All Packages</h2>
+    <div id="packageList">Loading...</div>
+  </div>
+
+  <div class="panel">
+    <button id="logoutBtn">Logout</button>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -67,30 +101,171 @@ const client = window.supabase.createClient(
   SUPABASE_KEY
 );
 
-document.getElementById("loginForm").addEventListener(
-  "submit", async function(event) {
-    event.preventDefault();
+const loginBox = document.getElementById("loginBox");
+const dashboard = document.getElementById("dashboard");
+const message = document.getElementById("message");
+const packageMessage = document.getElementById("packageMessage");
+const packageList = document.getElementById("packageList");
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
+async function checkAdmin() {
+  const { data } = await client.auth.getSession();
 
-    message.textContent = "Login হচ্ছে...";
+  if (data.session) {
+    const { data: userData, error } = await client.auth.getUser();
 
-    const { data, error } = await client.auth.signInWithPassword({
-      email: email,
-      password: password
+    if (!error && userData.user) {
+      const email = userData.user.email;
+      const { data: role, error: roleError } = await client
+        .from("admin_users")
+        .select("email")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (!roleError && role) {
+        loginBox.style.display = "none";
+        dashboard.style.display = "block";
+        loadPackages();
+        return;
+      }
+    }
+  }
+
+  loginBox.style.display = "block";
+  dashboard.style.display = "none";
+}
+
+document.getElementById("loginBtn").onclick = async function() {
+  message.textContent = "Login হচ্ছে...";
+
+  const { error } = await client.auth.signInWithPassword({
+    email: document.getElementById("email").value,
+    password: document.getElementById("password").value
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  await checkAdmin();
+};
+
+async function loadPackages() {
+  packageList.textContent = "Loading...";
+
+  const { data, error } = await client
+    .from("game_packages")
+    .select("id,name,diamonds,price_bdt,active")
+    .order("diamonds");
+
+  if (error) {
+    packageList.textContent = "Error: " + error.message;
+    return;
+  }
+
+  packageList.innerHTML = "";
+
+  data.forEach(function(item) {
+    const div = document.createElement("div");
+    div.className = "item";
+
+    const title = document.createElement("p");
+    title.textContent =
+      item.name + " | " + item.diamonds + " Diamonds | ৳" +
+      item.price_bdt + " | " +
+      (item.active ? "Active" : "Inactive");
+
+    const priceInput = document.createElement("input");
+    priceInput.type = "number";
+    priceInput.value = item.price_bdt;
+
+    const save = document.createElement("button");
+    save.className = "small";
+    save.textContent = "Save Price";
+
+    save.onclick = async function() {
+      const newPrice = Number(priceInput.value);
+
+      if (!Number.isFinite(newPrice) || newPrice <= 0) {
+        alert("সঠিক দাম দাও।");
+        return;
+      }
+
+      const { error } = await client
+        .from("game_packages")
+        .update({ price_bdt: newPrice })
+        .eq("id", item.id);
+
+      if (error) {
+        alert("Update হয়নি: " + error.message);
+      } else {
+        alert("Price Updated!");
+        loadPackages();
+      }
+    };
+
+    const toggle = document.createElement("button");
+    toggle.className = "small";
+    toggle.textContent = item.active ? "Deactivate" : "Activate";
+
+    toggle.onclick = async function() {
+      const { error } = await client
+        .from("game_packages")
+        .update({ active: !item.active })
+        .eq("id", item.id);
+
+      if (error) {
+        alert("পরিবর্তন হয়নি: " + error.message);
+      } else {
+        loadPackages();
+      }
+    };
+
+    div.appendChild(title);
+    div.appendChild(priceInput);
+    div.appendChild(save);
+    div.appendChild(toggle);
+    packageList.appendChild(div);
+  });
+}
+
+document.getElementById("addBtn").onclick = async function() {
+  const name = document.getElementById("packageName").value.trim();
+  const diamonds = Number(document.getElementById("diamonds").value);
+  const price = Number(document.getElementById("price").value);
+
+  if (!name || !Number.isInteger(diamonds) ||
+      diamonds <= 0 || !Number.isFinite(price) || price <= 0) {
+    packageMessage.textContent = "সঠিক তথ্য পূরণ করো।";
+    return;
+  }
+
+  const { error } = await client
+    .from("game_packages")
+    .insert({
+      name: name,
+      diamonds: diamonds,
+      price_bdt: price,
+      active: true
     });
 
-    if (error) {
-      message.textContent = "Login হয়নি: " + error.message;
-      return;
-    }
-
-    message.textContent = "Login সফল হয়েছে!";
+  if (error) {
+    packageMessage.textContent = "Error: " + error.message;
+  } else {
+    packageMessage.textContent = "Package যোগ হয়েছে!";
+    document.getElementById("packageName").value = "";
+    document.getElementById("diamonds").value = "";
+    document.getElementById("price").value = "";
+    loadPackages();
   }
-);
-</script>
+};
 
+document.getElementById("logoutBtn").onclick = async function() {
+  await client.auth.signOut();
+  location.reload();
+};
+
+checkAdmin();
+</script>
 </body>
 </html>
