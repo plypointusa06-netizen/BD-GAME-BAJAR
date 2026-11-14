@@ -245,5 +245,65 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "YOUR_PROJECT_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function loadPackages() {
+  const box = document.getElementById("packages");
+  const select = document.getElementById("packageSelect");
+
+  const { data, error } = await supabaseClient
+    .from("game_packages")
+    .select("name, diamonds, price_bdt")
+    .eq("active", true)
+    .order("diamonds");
+
+  if (error) {
+    box.textContent = "প্যাকেজ লোড করা যায়নি।";
+    console.error(error);
+    return;
+  }
+
+  box.innerHTML = "";
+  select.innerHTML = '<option value="">Select Diamond Package</option>';
+
+  data.forEach(function(item) {
+    const card = document.createElement("div");
+    card.className = "pack";
+
+    const name = document.createElement("span");
+    name.textContent = item.diamonds + " Diamonds";
+
+    const price = document.createElement("span");
+    price.className = "price";
+    price.textContent = "৳" + item.price_bdt;
+
+    card.appendChild(name);
+    card.appendChild(price);
+    box.appendChild(card);
+
+    const option = document.createElement("option");
+    option.value = item.diamonds;
+    option.textContent = item.diamonds + " Diamonds - ৳" + item.price_bdt;
+    select.appendChild(option);
+  });
+}
+
+loadPackages();
+
+document.getElementById("orderForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  alert("এটি শুধু ডেমো। অর্ডার সার্ভারে জমা হয়নি।");
+});
+</script>
+</body>
+</html>
 </body>
 </html>
