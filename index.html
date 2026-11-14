@@ -143,15 +143,54 @@ footer {
 </footer>
 
 <script>
-const packages = [
-  { name: "25 Diamonds", price: 25 },
-  { name: "50 Diamonds", price: 38 },
-  { name: "115 Diamonds", price: 80 },
-  { name: "240 Diamonds", price: 160 },
-  { name: "610 Diamonds", price: 400 },
-  { name: "850 Diamonds", price: 560 },
-  { name: "1240 Diamonds", price: 799 },
-  { name: "2530 Diamonds", price: 1570 }
+const packages = [let packages = [];
+
+async function loadPackages() {
+  const { data, error } = await supabaseClient
+    .from("game_packages")
+    .select("name, diamonds, price_bdt")
+    .eq("active", true)
+    .order("diamonds");
+
+  if (error) {
+    document.getElementById("packages").textContent =
+      "প্যাকেজ লোড করা যায়নি।";
+    return;
+  }
+
+  packages = data;
+
+  const box = document.getElementById("packages");
+  const select = document.getElementById("packageSelect");
+
+  box.innerHTML = "";
+  select.innerHTML = '<option value="">Select Diamond Package</option>';
+
+  data.forEach(function(item) {
+    const card = document.createElement("div");
+    card.className = "pack";
+
+    const name = document.createElement("span");
+    name.textContent = item.diamonds + " Diamonds";
+
+    const price = document.createElement("span");
+    price.className = "price";
+    price.textContent = "৳" + item.price_bdt;
+
+    card.appendChild(name);
+    card.appendChild(price);
+    box.appendChild(card);
+
+    const option = document.createElement("option");
+    option.value = item.diamonds;
+    option.textContent =
+      item.diamonds + " Diamonds - ৳" + item.price_bdt;
+
+    select.appendChild(option);
+  });
+}
+
+loadPackages();
 ];
 
 const packageBox = document.getElementById("packages");
