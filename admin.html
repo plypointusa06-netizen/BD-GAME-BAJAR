@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BD GAME BAJAR - Admin</title>
+<style>
+body {
+  margin: 0;
+  background: #101522;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+.box {
+  max-width: 400px;
+  margin: 60px auto;
+  background: #1b263b;
+  padding: 22px;
+  border-radius: 12px;
+}
+h2 { color: #00e6ad; text-align: center; }
+input, button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 7px;
+}
+button {
+  background: #00c995;
+  font-weight: bold;
+}
+#message { color: #ffd166; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>BD GAME BAJAR</h2>
+  <h3>Admin Login</h3>
+
+  <form id="loginForm">
+    <input id="email" type="email"
+      placeholder="Admin Email" required>
+
+    <input id="password" type="password"
+      placeholder="Password" required>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="message"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL =
+"https://qvmtlmefklbosxjinagk.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_ou7vq5uj85eVdM8nJH04AA_m1FeVb6b";
+
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+document.getElementById("loginForm").addEventListener(
+  "submit", async function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
+
+    message.textContent = "Login হচ্ছে...";
+
+    const { data, error } = await client.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      message.textContent = "Login হয়নি: " + error.message;
+      return;
+    }
+
+    message.textContent = "Login সফল হয়েছে!";
+  }
+);
+</script>
+
+</body>
+</html>
