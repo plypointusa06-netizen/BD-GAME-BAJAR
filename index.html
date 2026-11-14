@@ -1,309 +1,222 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BD GAME BAJAR</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b1020;
-  color: white;
-}
-header {
-  background: #151d35;
-  padding: 22px 10px;
-  text-align: center;
-}
-header h1 {
-  margin: 0;
-  color: #ffbd24;
-  font-size: 28px;
-}
-header p {
-  color: #ddd;
-  margin-bottom: 0;
-}
-.hero {
-  padding: 40px 15px;
-  text-align: center;
-  background: linear-gradient(135deg, #29365e, #11182b);
-}
-.hero h2 {
-  color: #ffbd24;
-}
-.container {
-  max-width: 650px;
-  margin: auto;
-  padding: 18px;
-}
-h3 {
-  color: #ffbd24;
-}
-.pack {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1c2743;
-  border: 1px solid #38496d;
-  padding: 16px;
-  margin: 12px 0;
-  border-radius: 12px;
-}
-.price {
-  color: #ffbd24;
-  font-weight: bold;
-}
-input, select {
-  width: 100%;
-  padding: 14px;
-  margin: 9px 0;
-  border: 1px solid #435276;
-  border-radius: 8px;
-  background: #1c2743;
-  color: white;
-  font-size: 15px;
-}
-button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  background: #ffbd24;
-  color: #111;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-}
-footer {
-  text-align: center;
-  padding: 25px;
-  color: #aaa;
-}
-.note {
-  color: #bbb;
-  font-size: 13px;
-  line-height: 1.6;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BD GAME BAJAR</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #101522;
+      color: white;
+    }
+    header {
+      background: #17233b;
+      padding: 22px 12px;
+      text-align: center;
+      border-bottom: 2px solid #00d9a5;
+    }
+    header h1 { color: #00e6ad; margin: 0; }
+    header p { color: #cbd5e1; }
+    main {
+      max-width: 650px;
+      margin: 22px auto;
+      padding: 15px;
+    }
+    .panel {
+      background: #1b263b;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+    h2 { color: #00e6ad; margin-top: 0; }
+    #status {
+      color: #ffd166;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    #packages {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .pack {
+      background: #263650;
+      padding: 15px 8px;
+      border-radius: 9px;
+      text-align: center;
+      border: 1px solid #40516c;
+    }
+    .pack strong { display: block; margin-bottom: 8px; }
+    .price { color: #00e6ad; font-weight: bold; }
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border-radius: 7px;
+      border: 0;
+      font-size: 15px;
+    }
+    input, select {
+      background: #eef2f7;
+      color: #111827;
+    }
+    button {
+      background: #00c995;
+      color: #071b17;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .note {
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #9ca3af;
+    }
+  </style>
 </head>
 
 <body>
+  <header>
+    <h1>BD GAME BAJAR</h1>
+    <p>Free Fire Diamond Top Up</p>
+  </header>
 
-<header>
-  <h1>BD GAME BAJAR</h1>
-  <p>Free Fire Diamond Top Up</p>
-</header>
+  <main>
+    <section class="panel">
+      <h2>Diamond Packages</h2>
+      <div id="status">প্যাকেজ লোড হচ্ছে...</div>
+      <div id="packages"></div>
+    </section>
 
-<section class="hero">
-  <h2>Welcome to BD GAME BAJAR</h2>
-  <p>Choose Your Diamond Package</p>
-</section>
+    <section class="panel">
+      <h2>Order Form</h2>
+      <form id="orderForm">
+        <input
+          type="text"
+          id="playerUid"
+          placeholder="Free Fire Player UID"
+          required
+        >
 
-<main class="container">
+        <select id="packageSelect" required>
+          <option value="">প্যাকেজ লোড হচ্ছে...</option>
+        </select>
 
-  <h3>💎 Diamond Packages</h3>
+        <button type="submit">Create Demo Order</button>
+      </form>
+      <p class="note">
+        এটি ডেমো ফর্ম। কোনো টাকা নেওয়া হবে না এবং
+        অর্ডার সার্ভারে জমা হবে না।
+      </p>
+    </section>
+  </main>
 
-  <div id="packages">
-    Loading...
-  </div>
+  <footer>© 2026 BD GAME BAJAR</footer>
 
-  <h3>📝 Demo Order Form</h3>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <form id="orderForm">
+  <script>
+    const SUPABASE_URL =
+      "https://qvmtlmefklbosxjinagk.supabase.co";
 
-    <input
-      type="text"
-      id="playerUID"
-      placeholder="Enter Free Fire Player UID"
-      required
-    >
+    const SUPABASE_KEY =
+      "sb_publishable_ou7vq5uj85eVdM8nJH04AA_m1FeVb6b";
 
-    <select id="packageSelect" required>
-      <option value="">Select Diamond Package</option>
-    </select>
+    const statusBox = document.getElementById("status");
+    const packagesBox = document.getElementById("packages");
+    const packageSelect = document.getElementById("packageSelect");
 
-    <button type="submit">Place Demo Order</button>
+    async function startApp() {
+      try {
+        if (!window.supabase) {
+          throw new Error("Supabase library load হয়নি");
+        }
 
-  </form>
+        const supabaseClient = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
 
-  <p class="note">
-    এটি একটি ডেমো ওয়েবসাইট। এখনো কোনো বাস্তব অর্ডার বা পেমেন্ট গ্রহণ করা হয় না।
-  </p>
+        statusBox.textContent = "Supabase সংযোগ হচ্ছে...";
 
-</main>
+        const { data, error } = await supabaseClient
+          .from("game_packages")
+          .select("name, diamonds, price_bdt")
+          .eq("active", true)
+          .order("diamonds");
 
-<footer>
-  © 2026 BD GAME BAJAR
-</footer>
+        if (error) throw error;
 
-<script>
-const packages = [let packages = [];
+        packagesBox.innerHTML = "";
+        packageSelect.innerHTML =
+          '<option value="">প্যাকেজ নির্বাচন করো</option>';
 
-async function loadPackages() {
-  const { data, error } = await supabaseClient
-    .from("game_packages")
-    .select("name, diamonds, price_bdt")
-    .eq("active", true)
-    .order("diamonds");
+        if (!data || data.length === 0) {
+          statusBox.textContent = "কোনো Active Package পাওয়া যায়নি।";
+          return;
+        }
 
-  if (error) {
-    document.getElementById("packages").textContent =
-      "প্যাকেজ লোড করা যায়নি।";
-    return;
-  }
+        data.forEach(function(item) {
+          const card = document.createElement("div");
+          card.className = "pack";
 
-  packages = data;
+          const name = document.createElement("strong");
+          name.textContent = item.diamonds + " Diamonds";
 
-  const box = document.getElementById("packages");
-  const select = document.getElementById("packageSelect");
+          const price = document.createElement("div");
+          price.className = "price";
+          price.textContent = "৳" + item.price_bdt;
 
-  box.innerHTML = "";
-  select.innerHTML = '<option value="">Select Diamond Package</option>';
+          card.appendChild(name);
+          card.appendChild(price);
+          packagesBox.appendChild(card);
 
-  data.forEach(function(item) {
-    const card = document.createElement("div");
-    card.className = "pack";
+          const option = document.createElement("option");
+          option.value = item.diamonds;
+          option.textContent =
+            item.diamonds + " Diamonds - ৳" + item.price_bdt;
 
-    const name = document.createElement("span");
-    name.textContent = item.diamonds + " Diamonds";
+          packageSelect.appendChild(option);
+        });
 
-    const price = document.createElement("span");
-    price.className = "price";
-    price.textContent = "৳" + item.price_bdt;
+        statusBox.textContent =
+          "সফলভাবে " + data.length + "টি প্যাকেজ লোড হয়েছে।";
 
-    card.appendChild(name);
-    card.appendChild(price);
-    box.appendChild(card);
+      } catch (error) {
+        console.error("App error:", error);
+        statusBox.textContent =
+          "সমস্যা হয়েছে: " + (error.message || "Unknown error");
+      }
+    }
 
-    const option = document.createElement("option");
-    option.value = item.diamonds;
-    option.textContent =
-      item.diamonds + " Diamonds - ৳" + item.price_bdt;
+    document.getElementById("orderForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
 
-    select.appendChild(option);
-  });
-}
+        const uid = document.getElementById("playerUid").value.trim();
+        const selected = packageSelect.value;
 
-loadPackages();
-alert("Supabase script is running");
-console.log("Supabase:", window.supabase);
-console.log("Client:", supabaseClient);];
+        if (!uid || !selected) {
+          alert("UID এবং Package নির্বাচন করো।");
+          return;
+        }
 
-const packageBox = document.getElementById("packages");
-const packageSelect = document.getElementById("packageSelect");
+        alert(
+          "Demo Order Created!\n" +
+          "Player UID: " + uid +
+          "\nPackage: " + selected +
+          "\n\nএটি শুধু ডেমো। অর্ডার সার্ভারে জমা হয়নি।"
+        );
+      });
 
-packages.forEach(function(item) {
-
-  const card = document.createElement("div");
-  card.className = "pack";
-
-  const name = document.createElement("span");
-  name.textContent = item.name;
-
-  const price = document.createElement("span");
-  price.className = "price";
-  price.textContent = "৳" + item.price;
-
-  card.appendChild(name);
-  card.appendChild(price);
-  packageBox.appendChild(card);
-
-  const option = document.createElement("option");
-  option.value = item.name;
-  option.textContent = item.name + " - ৳" + item.price;
-
-  packageSelect.appendChild(option);
-
-});
-
-document.getElementById("orderForm").addEventListener("submit", function(event) {
-
-  event.preventDefault();
-
-  const uid = document.getElementById("playerUID").value;
-  const selectedPackage = packageSelect.value;
-
-  alert(
-    "Demo Order Created!\n" +
-    "Player UID: " + uid +
-    "\nPackage: " + selectedPackage +
-    "\n\nএটি শুধু ডেমো। অর্ডার সার্ভারে জমা হয়নি।"
-  );
-
-});
-
-</const SUPABASE_URL = "YOUR_PROJECT_URL";https://qvmtlmefklbosxjinagk.supabase.co
-const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";sb_publishable_ou7vq5uj85eVdM8nJH04AA_m1FeVb6b
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "YOUR_PROJECT_URL";
-const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-async function loadPackages() {
-  const box = document.getElementById("packages");
-  const select = document.getElementById("packageSelect");
-
-  const { data, error } = await supabaseClient
-    .from("game_packages")
-    .select("name, diamonds, price_bdt")
-    .eq("active", true)
-    .order("diamonds");
-
-  if (error) {
-    box.textContent = "প্যাকেজ লোড করা যায়নি।";
-    console.error(error);
-    return;
-  }
-
-  box.innerHTML = "";
-  select.innerHTML = '<option value="">Select Diamond Package</option>';
-
-  data.forEach(function(item) {
-    const card = document.createElement("div");
-    card.className = "pack";
-
-    const name = document.createElement("span");
-    name.textContent = item.diamonds + " Diamonds";
-
-    const price = document.createElement("span");
-    price.className = "price";
-    price.textContent = "৳" + item.price_bdt;
-
-    card.appendChild(name);
-    card.appendChild(price);
-    box.appendChild(card);
-
-    const option = document.createElement("option");
-    option.value = item.diamonds;
-    option.textContent = item.diamonds + " Diamonds - ৳" + item.price_bdt;
-    select.appendChild(option);
-  });
-}
-
-loadPackages();
-
-document.getElementById("orderForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-  alert("এটি শুধু ডেমো। অর্ডার সার্ভারে জমা হয়নি।");
-});
-</script>
-</body>
-</html>
+    startApp();
+  </script>
 </body>
 </html>
