@@ -4,294 +4,275 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BD GAME BAJAR Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body {
-  margin:0;
-  padding:15px;
-  background:#101522;
-  color:white;
-  font-family:Arial,sans-serif;
-}
-header,.panel {
-  background:#1b263b;
-  padding:16px;
-  margin-bottom:15px;
-  border-radius:12px;
-}
-header { text-align:center; }
-h1,h2 { color:#00e6ad; }
-input,button {
-  width:100%;
-  box-sizing:border-box;
-  padding:13px;
-  margin:7px 0;
-  border:0;
-  border-radius:7px;
-}
-button {
-  background:#00c995;
-  color:#071b17;
-  font-weight:bold;
-}
-button:disabled { opacity:.5; }
-#dashboard { display:none; }
-#message,#packageMessage { color:#ffd166; }
-.item {
-  background:#263650;
-  padding:12px;
-  margin:10px 0;
-  border-radius:8px;
-}
-.item button { width:auto; padding:10px; }
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{background:#17243a;padding:18px;text-align:center}
+h2{color:#38bdf8}
+main{max-width:950px;margin:auto;padding:15px}
+.card{background:#1e293b;padding:18px;border-radius:12px;margin:15px 0}
+input,select,button{width:100%;padding:12px;margin:7px 0;border:0;border-radius:7px}
+input,select{background:#334155;color:white}
+button{background:#0284c7;color:white;font-weight:bold;cursor:pointer}
+.danger{background:#dc2626}
+.success{background:#16a34a}
+.small{width:auto;padding:8px}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{padding:10px;border-bottom:1px solid #475569;text-align:left}
+.table-wrap{overflow-x:auto}
+.hidden{display:none}
+.msg{color:#fbbf24}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>BD GAME BAJAR</h1>
-  <p>Admin Dashboard</p>
+<h2>BD GAME BAJAR</h2>
+<p>Admin Control Panel</p>
 </header>
 
-<div class="panel" id="loginBox">
-  <h2>Admin Login</h2>
-  <form id="loginForm">
-    <input id="email" type="email"
-      placeholder="Admin Email" required>
-    <input id="password" type="password"
-      placeholder="Password" required>
-    <button id="loginBtn" type="submit">Login</button>
-  </form>
-  <p id="message">Email ও Password দিয়ে Login করো।</p>
+<main>
+<section id="loginBox" class="card">
+<h3>Admin Login</h3>
+<input id="email" type="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginMsg" class="msg"></p>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<h3>Admin Dashboard</h3>
+<p id="adminEmail"></p>
+<button class="danger" onclick="logout()">Logout</button>
 </div>
 
-<div id="dashboard">
-  <div class="panel">
-    <h2>Package Management</h2>
-    <input id="packageName" placeholder="Package Name">
-    <input id="diamonds" type="number" placeholder="Diamond Amount">
-    <input id="price" type="number" placeholder="Price BDT">
-    <button id="addBtn">Add Package</button>
-    <p id="packageMessage"></p>
-  </div>
-
-  <div class="panel">
-    <h2>All Packages</h2>
-    <div id="packageList">লোড হচ্ছে...</div>
-  </div>
-
-  <div class="panel">
-    <button id="logoutBtn">Logout</button>
-  </div>
+<div class="card">
+<h3>Add Diamond Package</h3>
+<input id="pname" placeholder="Package Name">
+<input id="diamonds" type="number" placeholder="Diamond Amount">
+<input id="price" type="number" placeholder="Price (BDT)">
+<button onclick="addPackage()">Add Package</button>
+<p id="packageMsg" class="msg"></p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="card">
+<h3>All Packages</h3>
+<button onclick="loadPackages()">Refresh Packages</button>
+<div class="table-wrap">
+<table>
+<thead><tr>
+<th>Name</th><th>Diamonds</th><th>Price</th><th>Status</th><th>Action</th>
+</tr></thead>
+<tbody id="packageRows"></tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>Manage Orders</h3>
+<button onclick="loadOrders()">Refresh Orders</button>
+<div class="table-wrap">
+<table>
+<thead><tr>
+<th>ID</th><th>Player UID</th><th>Package</th><th>Diamonds</th><th>Price</th><th>Payment</th><th>Transaction</th><th>Status</th><th>Update</th>
+</tr></thead>
+<tbody id="orderRows"></tbody>
+</table>
+</div>
+<p id="orderMsg" class="msg"></p>
+</div>
+</section>
+</main>
+
 <script>
-const SUPABASE_URL =
-"https://qvmtlmefklbosxjinagk.supabase.co";
+const SUPABASE_URL = "https://qvmtlmefklbosxjinagk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ou7vq5uj85eVdM8nJH04AA_m1FeVb6b";
 
-const SUPABASE_KEY =
-"sb_publishable_ou7vq5uj85eVdM8nJH04AA_m1FeVb6b";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const client = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-const loginBox = document.getElementById("loginBox");
-const dashboard = document.getElementById("dashboard");
-const message = document.getElementById("message");
-const loginBtn = document.getElementById("loginBtn");
-const packageList = document.getElementById("packageList");
-const packageMessage = document.getElementById("packageMessage");
-
-function showDashboard() {
-  loginBox.style.display = "none";
-  dashboard.style.display = "block";
-  loadPackages();
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const msg=document.getElementById("loginMsg");
+ msg.textContent="Logging in...";
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){msg.textContent=error.message;return;}
+ await checkAdmin();
 }
 
-async function checkSession() {
-  try {
-    const { data, error } = await client.auth.getSession();
-    if (error) throw error;
+async function checkAdmin(){
+ const {data:{session}}=await db.auth.getSession();
+ if(!session){
+  showLogin();
+  return;
+ }
+ const {data,error}=await db
+ .from("admin_users")
+ .select("user_id,email")
+ .eq("user_id",session.user.id)
+ .maybeSingle();
 
-    if (data.session) {
-      showDashboard();
-    }
-  } catch (error) {
-    message.textContent = "Session Error: " + error.message;
-  }
+ if(error || !data){
+  await db.auth.signOut();
+  showLogin();
+  document.getElementById("loginMsg").textContent=
+   "এই অ্যাকাউন্ট Admin হিসেবে অনুমোদিত নয়।";
+  return;
+ }
+
+ document.getElementById("loginBox").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+ document.getElementById("adminEmail").textContent=data.email;
+ await loadPackages();
+ await loadOrders();
 }
 
-document.getElementById("loginForm").addEventListener(
-  "submit", async function(event) {
-    event.preventDefault();
-
-    loginBtn.disabled = true;
-    loginBtn.textContent = "অপেক্ষা করো...";
-    message.textContent = "Supabase Login চেষ্টা চলছে...";
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    try {
-      const loginPromise = client.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
-
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(
-          new Error("সময় শেষ। ইন্টারনেট ও Supabase সংযোগ পরীক্ষা করো।")
-        ), 15000);
-      });
-
-      const { data, error } = await Promise.race([
-        loginPromise,
-        timeoutPromise
-      ]);
-
-      if (error) throw error;
-
-      if (!data.session) {
-        throw new Error("Login Session পাওয়া যায়নি।");
-      }
-
-      message.textContent = "Login সফল হয়েছে!";
-      showDashboard();
-
-    } catch (error) {
-      message.textContent = "Login Error: " + error.message;
-    } finally {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Login";
-    }
-  }
-);
-
-async function loadPackages() {
-  packageList.textContent = "প্যাকেজ লোড হচ্ছে...";
-
-  try {
-    const { data, error } = await client
-      .from("game_packages")
-      .select("id,name,diamonds,price_bdt,active")
-      .order("diamonds");
-
-    if (error) throw error;
-
-    packageList.innerHTML = "";
-
-    if (!data || data.length === 0) {
-      packageList.textContent = "কোনো প্যাকেজ পাওয়া যায়নি।";
-      return;
-    }
-
-    data.forEach(function(item) {
-      const div = document.createElement("div");
-      div.className = "item";
-
-      const title = document.createElement("p");
-      title.textContent =
-        item.name + " | " + item.diamonds +
-        " Diamonds | ৳" + item.price_bdt +
-        " | " + (item.active ? "Active" : "Inactive");
-
-      const priceInput = document.createElement("input");
-      priceInput.type = "number";
-      priceInput.value = item.price_bdt;
-
-      const save = document.createElement("button");
-      save.textContent = "Save Price";
-
-      save.onclick = async function() {
-        const newPrice = Number(priceInput.value);
-
-        if (!Number.isFinite(newPrice) || newPrice <= 0) {
-          alert("সঠিক দাম দাও।");
-          return;
-        }
-
-        const { error } = await client
-          .from("game_packages")
-          .update({price_bdt:newPrice})
-          .eq("id",item.id);
-
-        if (error) {
-          alert("দাম পরিবর্তন হয়নি: " + error.message);
-        } else {
-          alert("দাম পরিবর্তন হয়েছে।");
-          loadPackages();
-        }
-      };
-
-      const toggle = document.createElement("button");
-      toggle.textContent = item.active ? "Deactivate" : "Activate";
-
-      toggle.onclick = async function() {
-        const { error } = await client
-          .from("game_packages")
-          .update({active:!item.active})
-          .eq("id",item.id);
-
-        if (error) {
-          alert("পরিবর্তন হয়নি: " + error.message);
-        } else {
-          loadPackages();
-        }
-      };
-
-      div.appendChild(title);
-      div.appendChild(priceInput);
-      div.appendChild(save);
-      div.appendChild(toggle);
-      packageList.appendChild(div);
-    });
-
-  } catch (error) {
-    packageList.textContent = "Package Error: " + error.message;
-  }
+function showLogin(){
+ document.getElementById("loginBox").classList.remove("hidden");
+ document.getElementById("dashboard").classList.add("hidden");
 }
 
-document.getElementById("addBtn").onclick = async function() {
-  const name = document.getElementById("packageName").value.trim();
-  const diamonds = Number(document.getElementById("diamonds").value);
-  const price = Number(document.getElementById("price").value);
+async function logout(){
+ await db.auth.signOut();
+ showLogin();
+}
 
-  if (!name || !Number.isInteger(diamonds) ||
-      diamonds <= 0 || !Number.isFinite(price) || price <= 0) {
-    packageMessage.textContent = "সঠিক তথ্য পূরণ করো।";
-    return;
-  }
+async function addPackage(){
+ const name=document.getElementById("pname").value.trim();
+ const diamonds=Number(document.getElementById("diamonds").value);
+ const price=Number(document.getElementById("price").value);
+ const msg=document.getElementById("packageMsg");
 
-  packageMessage.textContent = "প্যাকেজ যোগ হচ্ছে...";
+ if(!name || diamonds<=0 || price<=0){
+  msg.textContent="সঠিক তথ্য দিন";
+  return;
+ }
 
-  const { error } = await client
-    .from("game_packages")
-    .insert({
-      name:name,
-      diamonds:diamonds,
-      price_bdt:price,
-      active:true
-    });
+ const {error}=await db.from("game_packages").insert({
+  name,diamonds,price_bdt:price,active:true
+ });
 
-  if (error) {
-    packageMessage.textContent = "Error: " + error.message;
-  } else {
-    packageMessage.textContent = "প্যাকেজ যোগ হয়েছে!";
-    document.getElementById("packageName").value = "";
-    document.getElementById("diamonds").value = "";
-    document.getElementById("price").value = "";
-    loadPackages();
-  }
-};
+ if(error){msg.textContent=error.message;return;}
+ msg.textContent="Package যোগ হয়েছে";
+ document.getElementById("pname").value="";
+ document.getElementById("diamonds").value="";
+ document.getElementById("price").value="";
+ await loadPackages();
+}
 
-document.getElementById("logoutBtn").onclick = async function() {
-  await client.auth.signOut();
-  location.reload();
-};
+async function loadPackages(){
+ const tbody=document.getElementById("packageRows");
+ tbody.innerHTML="<tr><td colspan='5'>Loading...</td></tr>";
 
-checkSession();
+ const {data,error}=await db.from("game_packages")
+  .select("*").order("created_at",{ascending:false});
+
+ if(error){
+  tbody.innerHTML="<tr><td colspan='5'>"+escapeHTML(error.message)+"</td></tr>";
+  return;
+ }
+
+ tbody.innerHTML="";
+ (data||[]).forEach(p=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+   <td>${escapeHTML(p.name)}</td>
+   <td>${p.diamonds}</td>
+   <td>৳${p.price_bdt}</td>
+   <td>${p.active?"Active":"Inactive"}</td>
+   <td>
+    <button class="small" onclick="editPrice(${p.id},${Number(p.price_bdt)})">Price</button>
+    <button class="small ${p.active?'danger':'success'}" onclick="togglePackage(${p.id},${!p.active})">${p.active?"Off":"On"}</button>
+   </td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+async function editPrice(id,oldPrice){
+ const value=prompt("নতুন দাম লিখুন",oldPrice);
+ if(value===null)return;
+ const price=Number(value);
+ if(!Number.isFinite(price)||price<=0){
+  alert("সঠিক দাম লিখুন");
+  return;
+ }
+ const {error}=await db.from("game_packages")
+  .update({price_bdt:price}).eq("id",id);
+ if(error)alert(error.message);
+ else await loadPackages();
+}
+
+async function togglePackage(id,active){
+ const {error}=await db.from("game_packages")
+  .update({active}).eq("id",id);
+ if(error)alert(error.message);
+ else await loadPackages();
+}
+
+async function loadOrders(){
+ const tbody=document.getElementById("orderRows");
+ const msg=document.getElementById("orderMsg");
+ tbody.innerHTML="<tr><td colspan='9'>Loading...</td></tr>";
+
+ const {data,error}=await db.from("topup_orders")
+  .select("*").order("created_at",{ascending:false});
+
+ if(error){
+  tbody.innerHTML="";
+  msg.textContent=error.message;
+  return;
+ }
+ msg.textContent="";
+ tbody.innerHTML="";
+
+ (data||[]).forEach(o=>{
+  const tr=document.createElement("tr");
+  const status=["pending","processing","completed","cancelled"];
+  const options=status.map(s=>
+   `<option value="${s}" ${o.status===s?"selected":""}>${s}</option>`
+  ).join("");
+
+  tr.innerHTML=`
+   <td>${o.id}</td>
+   <td>${escapeHTML(o.player_uid)}</td>
+   <td>${escapeHTML(o.package_name)}</td>
+   <td>${o.diamonds}</td>
+   <td>৳${o.price_bdt}</td>
+   <td>${escapeHTML(o.payment_method||"-")}</td>
+   <td>${escapeHTML(o.transaction_ref||"-")}</td>
+   <td>${escapeHTML(o.status||"pending")}</td>
+   <td>
+    <select id="status-${o.id}">${options}</select>
+    <button class="small" onclick="updateOrder(${o.id})">Update</button>
+   </td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+async function updateOrder(id){
+ const status=document.getElementById("status-"+id).value;
+ const {error}=await db.from("topup_orders")
+  .update({status}).eq("id",id);
+ if(error){
+  alert(error.message);
+  return;
+ }
+ alert("Order status updated");
+ await loadOrders();
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+db.auth.onAuthStateChange((event)=>{
+ if(event==="SIGNED_OUT")showLogin();
+});
+
+checkAdmin();
 </script>
 </body>
 </html>
